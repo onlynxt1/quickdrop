@@ -1,0 +1,136 @@
+.wrapper {
+  width: 100%;
+}
+
+/* ── Drop Zone ── */
+.zone {
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-xl);
+  padding: 56px 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: rgba(255, 255, 255, 0.02);
+  position: relative;
+  overflow: hidden;
+}
+
+.zone:hover:not(.busy) {
+  border-color: rgba(10, 132, 255, 0.5);
+  background: rgba(10, 132, 255, 0.04);
+}
+
+.zone.active {
+  border-color: var(--accent);
+  background: rgba(10, 132, 255, 0.08);
+  border-style: solid;
+  transform: scale(1.01);
+}
+
+.zone.reject {
+  border-color: var(--error);
+  background: rgba(255, 69, 58, 0.06);
+}
+
+.zone.busy {
+  cursor: not-allowed;
+  border-color: var(--border);
+}
+
+/* ── Idle state ── */
+.idleState, .uploadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.iconWrap {
+  margin-bottom: 8px;
+  transition: transform 0.2s;
+}
+.zone.active .iconWrap {
+  transform: translateY(-4px);
+}
+
+.mainLabel {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.subLabel {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.limitLabel {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  background: rgba(255,255,255,0.05);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+.dragLabel {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* ── Upload state ── */
+.spinnerRing {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(10, 132, 255, 0.2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 4px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.uploadingLabel {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.progressLabel {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Progress bar (below zone) ── */
+.progressTrack {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.2s ease;
+}
+
+/* ── Error ── */
+.errorMsg {
+  margin-top: 12px;
+  padding: 10px 16px;
+  background: rgba(255, 69, 58, 0.1);
+  border: 1px solid rgba(255, 69, 58, 0.3);
+  border-radius: var(--radius-sm);
+  color: var(--error);
+  font-size: 14px;
+  text-align: center;
+}
