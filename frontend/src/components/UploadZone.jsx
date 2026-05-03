@@ -7,7 +7,7 @@ import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 import styles from './UploadZone.module.css';
 
-const MAX_SIZE = 500 * 1024 * 1024; // 500 MB
+const MAX_SIZE = 5 * 1024 * 1024 * 1024; // 5 GB
 
 export default function UploadZone({ onSuccess }) {
   const [progress, setProgress]   = useState(0);
@@ -16,7 +16,7 @@ export default function UploadZone({ onSuccess }) {
 
   const uploadFile = useCallback(async (file) => {
     if (file.size > MAX_SIZE) {
-      setError('File is too large. Maximum size is 500 MB.');
+      setError('File is too large. Maximum size is 5 GB.');
       return;
     }
 
@@ -98,7 +98,7 @@ export default function UploadZone({ onSuccess }) {
                   Drag &amp; drop your file here
                 </p>
                 <p className={styles.subLabel}>or click to browse</p>
-                <p className={styles.limitLabel}>Up to 500 MB · Videos, images &amp; more</p>
+                <p className={styles.limitLabel}>Up to 5 GB · Videos, images &amp; more</p>
               </>
             )}
           </div>
