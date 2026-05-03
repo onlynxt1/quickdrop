@@ -1,9 +1,4 @@
-/* ── Wrapper: positions the panel relative to the file row ── */
-.wrap {
-  position: relative;
-}
-
-/* ── Toggle button (bar-chart icon) ── */
+/* ── Toggle button ── */
 .toggleBtn {
   display: flex;
   align-items: center;
@@ -16,6 +11,7 @@
   color: var(--text-tertiary);
   cursor: pointer;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 .toggleBtn:hover {
   background: rgba(255, 255, 255, 0.1);
@@ -28,24 +24,20 @@
   background: rgba(10, 132, 255, 0.1);
 }
 
-/* ── Analytics panel drawer ── */
+/* ── Panel — inline block, full width, below the file row ── */
 .panel {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-  width: 320px;
-  background: var(--bg-secondary);
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px;
-  z-index: 50;
-  box-shadow: var(--shadow);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
-/* ── Summary stat row ── */
+/* ── Summary stats ── */
 .stats {
   display: flex;
   align-items: center;
@@ -77,7 +69,7 @@
   width: 1px;
   height: 36px;
   background: var(--border);
-  margin: 0 12px;
+  margin: 0 16px;
 }
 
 /* ── Download log ── */
@@ -98,7 +90,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 200px;
+  max-height: 220px;
   overflow-y: auto;
 }
 
@@ -106,13 +98,12 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 7px 10px;
+  padding: 8px 12px;
   background: rgba(255, 255, 255, 0.03);
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
 }
 
-/* User initial avatar */
 .avatar {
   width: 26px;
   height: 26px;
@@ -137,9 +128,9 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--text-primary);
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .logTime {
@@ -153,7 +144,7 @@
   font-size: 13px;
   color: var(--text-tertiary);
   text-align: center;
-  padding: 8px 0;
+  padding: 6px 0;
 }
 
 .error {
@@ -162,25 +153,24 @@
   text-align: center;
 }
 
+.loadingRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 4px 0;
+}
+
 .spinner {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255,255,255,0.2);
-  border-top-color: currentColor;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── Responsive: full-width on mobile ── */
-@media (max-width: 600px) {
-  .panel {
-    position: fixed;
-    left: 16px;
-    right: 16px;
-    width: auto;
-    top: auto;
-    bottom: 16px;
-  }
-}
