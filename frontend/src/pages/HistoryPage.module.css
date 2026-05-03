@@ -30,8 +30,10 @@
 /* ── Header ── */
 .header {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .title {
@@ -99,6 +101,24 @@
 
 .expiry  { color: var(--warning); }
 .expired { color: var(--error); }
+
+/* Download count — subtle highlight */
+.dlCount { color: var(--text-secondary); }
+
+/* Analytics hint label in header */
+.analyticsHint {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+/* fileBlock wraps the row + the AnalyticsPanel (which is absolutely positioned) */
+.fileBlock {
+  position: relative;
+}
 
 /* ── Actions ── */
 .actions {

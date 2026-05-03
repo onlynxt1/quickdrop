@@ -1,6 +1,6 @@
 /**
  * Database setup using SQLite (better-sqlite3)
- * Creates tables for users and uploaded files
+ * Creates tables for users, uploaded files, and download logs
  */
 const Database = require('better-sqlite3');
 const path = require('path');
@@ -26,7 +26,7 @@ db.exec(`
   )
 `);
 
-// Create files table
+// Create files table (with last_downloaded_at for analytics)
 db.exec(`
   CREATE TABLE IF NOT EXISTS files (
     id TEXT PRIMARY KEY,
@@ -36,9 +36,38 @@ db.exec(`
     size INTEGER NOT NULL,
     user_id INTEGER,
     download_count INTEGER DEFAULT 0,
+    last_downloaded_at DATETIME,
     expires_at DATETIME NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+  )
+`);
+
+// Migrate: add last_downloaded_at to existing databases that don't have it yet
+try {
+  db.exec(`ALTER TABLE files ADD COLUMN last_downloaded_at DATETIME`);
+} catch {
+  // Column already exists — safe to ignore
+}
+
+/**
+ * download_logs — one row per download event
+ *   file_id   : which file was downloaded
+ *   user_id   : NULL if the downloader was not logged in
+ *   username  : display name, "Guest" if not logged in
+ *   created_at: when it happened
+ *
+ * We deliberately do NOT store IP addresses or any other
+ * sensitive personal data.
+ */
+db.exec(`
+  CREATE TABLE IF NOT EXISTS download_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    file_id TEXT NOT NULL,
+    user_id INTEGER,
+    username TEXT NOT NULL DEFAULT 'Guest',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
   )
 `);
 

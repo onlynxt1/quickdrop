@@ -8,6 +8,7 @@ const path = require('path');
 const fs = require('fs');
 const cron = require('node-cron');
 const db = require('./db');
+const { optionalAuth } = require('./middleware/auth');
 
 const app = express();
 // In production PORT=5000 (set by Replit). In dev, Express uses 3001 and Vite proxies to it.
@@ -21,10 +22,12 @@ app.use(express.urlencoded({ extended: true }));
 // ── API Routes ──────────────────────────────────────────────
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/files', require('./routes/files'));
+app.use('/api/analytics', require('./routes/analytics'));
 
 // ── File Download Route ─────────────────────────────────────
-// This handles /download/:id — the shareable link destination
-app.get('/download/:id', (req, res) => {
+// optionalAuth attaches req.userId + req.username if a valid JWT is present,
+// but doesn't block the request if there's no token (guest downloads are fine).
+app.get('/download/:id', optionalAuth, (req, res) => {
   const file = db.prepare('SELECT * FROM files WHERE id = ?').get(req.params.id);
 
   if (!file) {
@@ -41,8 +44,24 @@ app.get('/download/:id', (req, res) => {
     return res.status(404).send('File not found on server');
   }
 
-  // Increment download counter
-  db.prepare('UPDATE files SET download_count = download_count + 1 WHERE id = ?').run(file.id);
+  // ── Analytics: record this download ──────────────────────
+  // Determine who is downloading (logged-in user or guest)
+  const downloaderId = req.userId || null;
+  const downloaderName = req.username || 'Guest';
+
+  // Increment total download count and set last_downloaded_at timestamp
+  db.prepare(`
+    UPDATE files
+    SET download_count = download_count + 1,
+        last_downloaded_at = datetime('now')
+    WHERE id = ?
+  `).run(file.id);
+
+  // Insert a row into the download log (no IP — privacy-first)
+  db.prepare(`
+    INSERT INTO download_logs (file_id, user_id, username)
+    VALUES (?, ?, ?)
+  `).run(file.id, downloaderId, downloaderName);
 
   // Send the file with the original filename
   res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(file.original_name)}"`);

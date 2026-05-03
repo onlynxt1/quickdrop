@@ -1,10 +1,12 @@
 /**
  * History page — shows all files uploaded by the logged-in user
+ * Includes per-file download analytics (owner-only)
  */
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
+import AnalyticsPanel from '../components/AnalyticsPanel';
 import styles from './HistoryPage.module.css';
 
 export default function HistoryPage() {
@@ -37,9 +39,10 @@ export default function HistoryPage() {
   }
 
   function formatSize(bytes) {
-    if (bytes < 1024)        return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    if (bytes < 1024)            return `${bytes} B`;
+    if (bytes < 1024 * 1024)     return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
   }
 
   function timeAgo(dateStr) {
@@ -94,12 +97,25 @@ export default function HistoryPage() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Your files</h2>
-        <p className={styles.subtitle}>
-          {files.length === 0
-            ? 'No active uploads'
-            : `${files.length} active upload${files.length !== 1 ? 's' : ''}`}
-        </p>
+        <div>
+          <h2 className={styles.title}>Your files</h2>
+          <p className={styles.subtitle}>
+            {files.length === 0
+              ? 'No active uploads'
+              : `${files.length} active upload${files.length !== 1 ? 's' : ''}`}
+          </p>
+        </div>
+        {/* Analytics hint — only visible when there are files */}
+        {files.length > 0 && (
+          <p className={styles.analyticsHint}>
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <rect x="1" y="8" width="2.5" height="4" rx="0.8" fill="currentColor"/>
+              <rect x="5.25" y="5" width="2.5" height="7" rx="0.8" fill="currentColor"/>
+              <rect x="9.5" y="2" width="2.5" height="10" rx="0.8" fill="currentColor"/>
+            </svg>
+            Tap the chart icon to see analytics
+          </p>
+        )}
       </div>
 
       {files.length === 0 ? (
@@ -112,68 +128,80 @@ export default function HistoryPage() {
       ) : (
         <div className={styles.list}>
           {files.map(f => (
-            <div key={f.id} className={`${styles.row} animate-fadeIn`}>
-              <span className={styles.fileEmoji}>{getFileEmoji(f.mimeType)}</span>
+            <div key={f.id} className={styles.fileBlock}>
+              {/* ── File row ── */}
+              <div className={`${styles.row} animate-fadeIn`}>
+                <span className={styles.fileEmoji}>{getFileEmoji(f.mimeType)}</span>
 
-              <div className={styles.fileInfo}>
-                <span className={styles.fileName}>{f.originalName}</span>
-                <div className={styles.fileMeta}>
-                  <span>{formatSize(f.size)}</span>
-                  <span>·</span>
-                  <span>{f.downloadCount} download{f.downloadCount !== 1 ? 's' : ''}</span>
-                  <span>·</span>
-                  <span>{timeAgo(f.createdAt)}</span>
-                  <span>·</span>
-                  <span className={timeLeft(f.expiresAt) === 'Expired' ? styles.expired : styles.expiry}>
-                    {timeLeft(f.expiresAt)}
-                  </span>
+                <div className={styles.fileInfo}>
+                  <span className={styles.fileName}>{f.originalName}</span>
+                  <div className={styles.fileMeta}>
+                    <span>{formatSize(f.size)}</span>
+                    <span>·</span>
+                    {/* Download count — clicking this opens analytics */}
+                    <span className={styles.dlCount}>
+                      {f.downloadCount} download{f.downloadCount !== 1 ? 's' : ''}
+                    </span>
+                    <span>·</span>
+                    <span>{timeAgo(f.createdAt)}</span>
+                    <span>·</span>
+                    <span className={timeLeft(f.expiresAt) === 'Expired' ? styles.expired : styles.expiry}>
+                      {timeLeft(f.expiresAt)}
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              <div className={styles.actions}>
-                <button
-                  className={`${styles.actionBtn} ${copied === f.id ? styles.copiedBtn : ''}`}
-                  onClick={() => copyLink(f.id)}
-                  title="Copy link"
-                >
-                  {copied === f.id ? (
+                <div className={styles.actions}>
+                  {/* Copy link */}
+                  <button
+                    className={`${styles.actionBtn} ${copied === f.id ? styles.copiedBtn : ''}`}
+                    onClick={() => copyLink(f.id)}
+                    title="Copy link"
+                  >
+                    {copied === f.id ? (
+                      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                        <path d="M3 7.5l3 3 6-6" stroke="currentColor" strokeWidth="2"
+                          strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    ) : (
+                      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                        <rect x="4.5" y="4.5" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3"/>
+                        <path d="M10.5 4.5V3.5a1 1 0 00-1-1h-6a1 1 0 00-1 1v6a1 1 0 001 1h1"
+                          stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                      </svg>
+                    )}
+                  </button>
+
+                  {/* Open download page */}
+                  <a
+                    href={`/download/${f.id}`}
+                    className={styles.actionBtn}
+                    target="_blank"
+                    rel="noreferrer"
+                    title="Open download page"
+                  >
                     <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-                      <path d="M3 7.5l3 3 6-6" stroke="currentColor" strokeWidth="2"
+                      <path d="M7.5 2v8M7.5 10l-3-3M7.5 10l3-3" stroke="currentColor" strokeWidth="1.5"
                         strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M2 13h11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                     </svg>
-                  ) : (
+                  </a>
+
+                  {/* Analytics — bar-chart icon, opens the AnalyticsPanel */}
+                  <AnalyticsPanel fileId={f.id} />
+
+                  {/* Delete */}
+                  <button
+                    className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                    onClick={() => deleteFile(f.id)}
+                    title="Delete file"
+                  >
                     <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-                      <rect x="4.5" y="4.5" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3"/>
-                      <path d="M10.5 4.5V3.5a1 1 0 00-1-1h-6a1 1 0 00-1 1v6a1 1 0 001 1h1"
-                        stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                      <path d="M3 4h9M6 4V2.5h3V4M5 4v8a.5.5 0 00.5.5h4a.5.5 0 00.5-.5V4"
+                        stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-                  )}
-                </button>
-
-                <a
-                  href={`/download/${f.id}`}
-                  className={styles.actionBtn}
-                  target="_blank"
-                  rel="noreferrer"
-                  title="Open download page"
-                >
-                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-                    <path d="M7.5 2v8M7.5 10l-3-3M7.5 10l3-3" stroke="currentColor" strokeWidth="1.5"
-                      strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M2 13h11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                  </svg>
-                </a>
-
-                <button
-                  className={`${styles.actionBtn} ${styles.deleteBtn}`}
-                  onClick={() => deleteFile(f.id)}
-                  title="Delete file"
-                >
-                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-                    <path d="M3 4h9M6 4V2.5h3V4M5 4v8a.5.5 0 00.5.5h4a.5.5 0 00.5-.5V4"
-                      stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </button>
+                  </button>
+                </div>
               </div>
             </div>
           ))}
