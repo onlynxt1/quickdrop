@@ -10,7 +10,8 @@ const cron = require('node-cron');
 const db = require('./db');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+// In production PORT=5000 (set by Replit). In dev, Express uses 3001 and Vite proxies to it.
+const PORT = process.env.PORT || (process.env.NODE_ENV === 'production' ? 5000 : 3001);
 
 // ── Middleware ──────────────────────────────────────────────
 app.use(cors({ origin: '*' }));
@@ -78,6 +79,19 @@ cron.schedule('*/5 * * * *', () => {
 
 // ── Health Check ────────────────────────────────────────────
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+
+// ── Serve Built Frontend in Production ──────────────────────
+// In production the Vite build outputs to frontend/dist.
+// Express serves those static files and falls back to index.html
+// so that React Router's client-side routes work correctly.
+const FRONTEND_DIST = path.join(__dirname, '..', '..', 'frontend', 'dist');
+if (fs.existsSync(FRONTEND_DIST)) {
+  app.use(express.static(FRONTEND_DIST));
+  // Catch-all: return index.html for any non-API route (SPA routing)
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(FRONTEND_DIST, 'index.html'));
+  });
+}
 
 // ── Start Server ────────────────────────────────────────────
 app.listen(PORT, '0.0.0.0', () => {
