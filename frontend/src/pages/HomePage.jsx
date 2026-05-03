@@ -55,7 +55,8 @@ export default function HomePage() {
           { icon: '⚡', label: 'Instant sharing' },
           { icon: '🔒', label: 'Auto-deleted in 1h' },
           { icon: '📱', label: 'Works on any device' },
-          { icon: '📦', label: 'Up to 50 MB' },
+          { icon: '🎬', label: 'Videos supported' },
+          { icon: '📦', label: 'Up to 500 MB' },
         ].map(f => (
           <div key={f.label} className={styles.pill}>
             <span>{f.icon}</span>

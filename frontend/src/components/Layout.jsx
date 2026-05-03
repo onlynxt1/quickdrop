@@ -52,7 +52,7 @@ export default function Layout({ children }) {
       <main className={styles.main}>{children}</main>
 
       <footer className={styles.footer}>
-        <p>Files auto-delete after 1 hour &nbsp;·&nbsp; Max 50 MB</p>
+        <p>Files auto-delete after 1 hour &nbsp;·&nbsp; Max 500 MB &nbsp;·&nbsp; Videos supported</p>
       </footer>
     </div>
   );

@@ -1,6 +1,6 @@
 /**
  * Download page — shown when someone opens a shared download link
- * Displays file info and a download button
+ * Displays file info, an inline video/audio player when applicable, and a download button
  */
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -37,9 +37,10 @@ export default function DownloadPage() {
 
   function formatSize(bytes) {
     if (!bytes) return '';
-    if (bytes < 1024)        return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    if (bytes < 1024)            return `${bytes} B`;
+    if (bytes < 1024 * 1024)     return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
   }
 
   function timeLeft(expiresAt) {
@@ -61,6 +62,10 @@ export default function DownloadPage() {
     if (mimeType.includes('text/'))     return '📝';
     return '📄';
   }
+
+  const isVideo = file?.mimeType?.startsWith('video/');
+  const isAudio = file?.mimeType?.startsWith('audio/');
+  const isImage = file?.mimeType?.startsWith('image/');
 
   if (loading) {
     return (
@@ -92,10 +97,54 @@ export default function DownloadPage() {
   return (
     <div className={styles.center}>
       <div className={`${styles.card} animate-slideUp`}>
-        {/* File icon + name */}
-        <div className={styles.fileIcon}>
-          <span>{getFileEmoji(file.mimeType)}</span>
-        </div>
+
+        {/* ── Inline video player ── */}
+        {isVideo && (
+          <div className={styles.mediaWrap}>
+            <video
+              className={styles.videoPlayer}
+              controls
+              preload="metadata"
+              src={`/download/${id}`}
+            >
+              Your browser does not support video playback.
+            </video>
+          </div>
+        )}
+
+        {/* ── Inline audio player ── */}
+        {isAudio && (
+          <div className={styles.mediaWrap}>
+            <div className={styles.audioIcon}>🎵</div>
+            <audio
+              className={styles.audioPlayer}
+              controls
+              preload="metadata"
+              src={`/download/${id}`}
+            >
+              Your browser does not support audio playback.
+            </audio>
+          </div>
+        )}
+
+        {/* ── Image preview ── */}
+        {isImage && (
+          <div className={styles.mediaWrap}>
+            <img
+              className={styles.imagePreview}
+              src={`/download/${id}`}
+              alt={file.originalName}
+            />
+          </div>
+        )}
+
+        {/* ── File icon (non-media files) ── */}
+        {!isVideo && !isAudio && !isImage && (
+          <div className={styles.fileIcon}>
+            <span>{getFileEmoji(file.mimeType)}</span>
+          </div>
+        )}
+
         <h2 className={styles.fileName}>{file.originalName}</h2>
 
         {/* Meta */}
@@ -127,7 +176,7 @@ export default function DownloadPage() {
               strokeLinecap="round" strokeLinejoin="round"/>
             <path d="M3 17h14" stroke="white" strokeWidth="2" strokeLinecap="round"/>
           </svg>
-          Download File
+          Download {isVideo ? 'Video' : isAudio ? 'Audio' : 'File'}
         </a>
 
         {/* QR toggle */}
