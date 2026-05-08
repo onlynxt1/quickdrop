@@ -63,9 +63,10 @@ router.post('/upload', optionalAuth, upload.single('file'), (req, res) => {
       expiresAt
     );
 
-    // Build the download link using the request host
+    // Build the share link (preview page) using the request host.
+    // The actual file download lives at /download/:id (backend-only route).
     const host = `${req.protocol}://${req.get('host')}`;
-    const downloadLink = `${host}/download/${fileId}`;
+    const downloadLink = `${host}/share/${fileId}`;
 
     res.status(201).json({
       id: fileId,
@@ -110,7 +111,7 @@ router.get('/:id/qr', async (req, res) => {
   if (!file) return res.status(404).json({ error: 'File not found' });
 
   const host = `${req.protocol}://${req.get('host')}`;
-  const downloadLink = `${host}/download/${file.id}`;
+  const downloadLink = `${host}/share/${file.id}`;
 
   try {
     const qrDataUrl = await QRCode.toDataURL(downloadLink, {
@@ -122,6 +123,65 @@ router.get('/:id/qr', async (req, res) => {
   } catch {
     res.status(500).json({ error: 'Failed to generate QR code' });
   }
+});
+
+// GET /api/files/:id/stream — serve the file inline for in-browser preview
+// Does NOT increment the download counter — only /download/:id does that.
+router.get('/:id/stream', (req, res) => {
+  const file = db.prepare('SELECT * FROM files WHERE id = ?').get(req.params.id);
+  if (!file) return res.status(404).json({ error: 'File not found' });
+
+  if (new Date(file.expires_at) < new Date()) {
+    return res.status(410).json({ error: 'File has expired' });
+  }
+
+  const filePath = path.join(UPLOADS_DIR, file.stored_name);
+  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'File not found on disk' });
+
+  // inline so the browser renders it rather than triggering a save dialog
+  res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(file.original_name)}"`);
+  res.setHeader('Content-Type', file.mime_type || 'application/octet-stream');
+  res.setHeader('Accept-Ranges', 'bytes');
+  res.sendFile(filePath);
+});
+
+// GET /api/files/:id/thumbnail — generate a JPEG thumbnail for video files
+// Uses ffmpeg to extract one frame at the 1-second mark.
+router.get('/:id/thumbnail', (req, res) => {
+  const file = db.prepare('SELECT * FROM files WHERE id = ?').get(req.params.id);
+  if (!file) return res.status(404).json({ error: 'File not found' });
+  if (!file.mime_type?.startsWith('video/')) {
+    return res.status(400).json({ error: 'Not a video file' });
+  }
+
+  const filePath = path.join(UPLOADS_DIR, file.stored_name);
+  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'File not found on disk' });
+
+  const { spawn } = require('child_process');
+
+  // Extract one frame at 00:00:01, output raw JPEG to stdout
+  const ffmpeg = spawn('ffmpeg', [
+    '-ss', '00:00:01',
+    '-i', filePath,
+    '-frames:v', '1',
+    '-vf', 'scale=640:-1',
+    '-f', 'image2pipe',
+    '-vcodec', 'mjpeg',
+    '-q:v', '3',
+    'pipe:1'
+  ]);
+
+  res.setHeader('Content-Type', 'image/jpeg');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+
+  ffmpeg.stdout.pipe(res);
+
+  ffmpeg.stderr.on('data', () => {}); // suppress stderr noise
+
+  ffmpeg.on('error', () => res.status(500).end());
+  ffmpeg.on('close', code => {
+    if (code !== 0 && !res.headersSent) res.status(500).end();
+  });
 });
 
 // GET /api/files/my — list files for the logged-in user

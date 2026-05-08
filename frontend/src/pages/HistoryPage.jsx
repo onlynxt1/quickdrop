@@ -86,7 +86,7 @@ export default function HistoryPage() {
   }
 
   function copyLink(id) {
-    const link = `${window.location.origin}/download/${id}`;
+    const link = `${window.location.origin}/share/${id}`;
     navigator.clipboard.writeText(link).then(() => {
       setCopied(id);
       setTimeout(() => setCopied(''), 2000);
@@ -231,11 +231,11 @@ export default function HistoryPage() {
 
                     {/* Open download page */}
                     <a
-                      href={`/download/${f.id}`}
+                      href={`/share/${f.id}`}
                       className={styles.actionBtn}
                       target="_blank"
                       rel="noreferrer"
-                      title="Open download page"
+                      title="Open preview page"
                     >
                       <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
                         <path d="M7.5 2v8M7.5 10l-3-3M7.5 10l3-3" stroke="currentColor" strokeWidth="1.5"

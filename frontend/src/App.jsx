@@ -15,7 +15,7 @@ export default function App() {
       <Layout>
         <Routes>
           <Route path="/"              element={<HomePage />} />
-          <Route path="/download/:id"  element={<DownloadPage />} />
+          <Route path="/share/:id"     element={<DownloadPage />} />
           <Route path="/auth"          element={<AuthPage />} />
           <Route path="/history"       element={<HistoryPage />} />
         </Routes>

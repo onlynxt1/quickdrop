@@ -20,6 +20,9 @@ export default defineConfig({
       '/download': {
         target: 'http://localhost:3001',
         changeOrigin: true
+      },
+      '/share': {
+        bypass: () => '/index.html'
       }
     }
   }
