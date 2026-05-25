@@ -23,6 +23,9 @@ export default defineConfig({
       },
       '/share': {
         bypass: () => '/index.html'
+      },
+      '/note': {
+        bypass: () => '/index.html'
       }
     }
   }

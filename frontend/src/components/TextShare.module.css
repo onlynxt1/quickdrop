@@ -1,0 +1,156 @@
+/* ── Outer wrapper ── */
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+/* ── Textarea container ── */
+.textareaWrap {
+  position: relative;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.textareaWrap:focus-within {
+  border-color: rgba(10, 132, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.12);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 180px;
+  resize: vertical;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 18px 18px 36px; /* bottom padding leaves room for char counter */
+  color: var(--text-primary);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.65;
+  caret-color: var(--accent);
+}
+.textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Character counter anchored to bottom-right of textarea */
+.charCount {
+  position: absolute;
+  bottom: 10px;
+  right: 14px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+.charWarn { color: var(--warning); }
+.charOver  { color: var(--error); }
+
+/* ── Error message ── */
+.error {
+  font-size: 13px;
+  color: var(--error);
+  padding: 0 2px;
+}
+
+/* ── Footer row: expiry + share button ── */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Expiry section */
+.expiry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.expiryLabel {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.expiryPills {
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+}
+
+.expiryPill {
+  padding: 4px 12px;
+  border-radius: calc(var(--radius-sm) - 2px);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.expiryPill:hover { color: var(--text-primary); }
+.expiryActive {
+  background: var(--accent);
+  color: white !important;
+  box-shadow: 0 2px 6px rgba(10, 132, 255, 0.3);
+}
+
+/* Share button */
+.shareBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, opacity 0.2s;
+  box-shadow: 0 4px 14px rgba(10, 132, 255, 0.35);
+  white-space: nowrap;
+}
+.shareBtn:hover:not(:disabled) {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+.shareBtn:active:not(:disabled) { transform: translateY(0); }
+.shareBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Keyboard shortcut hint */
+.hint {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-align: right;
+  margin-top: -6px;
+}

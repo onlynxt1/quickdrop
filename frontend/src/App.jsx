@@ -6,6 +6,7 @@ import { AuthProvider } from './hooks/useAuth';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import DownloadPage from './pages/DownloadPage';
+import SnippetPage from './pages/SnippetPage';
 import AuthPage from './pages/AuthPage';
 import HistoryPage from './pages/HistoryPage';
 
@@ -16,6 +17,7 @@ export default function App() {
         <Routes>
           <Route path="/"              element={<HomePage />} />
           <Route path="/share/:id"     element={<DownloadPage />} />
+          <Route path="/note/:id"      element={<SnippetPage />} />
           <Route path="/auth"          element={<AuthPage />} />
           <Route path="/history"       element={<HistoryPage />} />
         </Routes>

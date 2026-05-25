@@ -71,4 +71,25 @@ db.exec(`
   )
 `);
 
+/**
+ * snippets — stores shared text notes and links
+ *   id         : UUID primary key (used in the shareable URL)
+ *   content    : the text, note, or URL the user shared
+ *   user_id    : NULL if the author was not logged in
+ *   expires_at : when the snippet should be auto-deleted
+ *   created_at : when it was created
+ *
+ * We deliberately keep this table minimal — no tracking, no IP storage.
+ */
+db.exec(`
+  CREATE TABLE IF NOT EXISTS snippets (
+    id TEXT PRIMARY KEY,
+    content TEXT NOT NULL,
+    user_id INTEGER,
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+  )
+`);
+
 module.exports = db;
