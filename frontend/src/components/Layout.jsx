@@ -19,13 +19,7 @@ export default function Layout({ children }) {
     <div className={styles.shell}>
       <nav className={styles.nav}>
         <Link to="/" className={styles.logo}>
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <rect width="28" height="28" rx="8" fill="#0A84FF"/>
-            <path d="M14 7v10M14 17l-4-4M14 17l4-4" stroke="white" strokeWidth="2.2"
-              strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M7 21h14" stroke="white" strokeWidth="2.2" strokeLinecap="round"/>
-          </svg>
-          <span>QuickDrop</span>
+          <img src="/logo.png" alt="QuickDrop" height="64" style={{ display: 'block' }} />
         </Link>
 
         <div className={styles.navRight}>
