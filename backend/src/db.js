@@ -92,4 +92,34 @@ db.exec(`
   )
 `);
 
+// ── Vault: encrypted personal file storage ────────────────────
+db.exec(`
+  CREATE TABLE IF NOT EXISTS vault_folders (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    user_id INTEGER NOT NULL,
+    parent_id TEXT,
+    color TEXT DEFAULT '#0A84FF',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_id) REFERENCES vault_folders(id) ON DELETE CASCADE
+  )
+`);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS vault_files (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    stored_name TEXT NOT NULL,
+    mime_type TEXT,
+    size INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    folder_id TEXT,
+    iv TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (folder_id) REFERENCES vault_folders(id) ON DELETE SET NULL
+  )
+`);
+
 module.exports = db;

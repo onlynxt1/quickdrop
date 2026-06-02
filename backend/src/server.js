@@ -20,10 +20,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ── API Routes ──────────────────────────────────────────────
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/files', require('./routes/files'));
+app.use('/api/auth',      require('./routes/auth'));
+app.use('/api/files',     require('./routes/files'));
 app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/snippets',  require('./routes/snippets'));
+app.use('/api/vault',     require('./routes/vault'));
 
 // ── File Download Route ─────────────────────────────────────
 // optionalAuth attaches req.userId + req.username if a valid JWT is present,

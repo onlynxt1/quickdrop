@@ -26,6 +26,12 @@ export default function Layout({ children }) {
           {user ? (
             <>
               <Link
+                to="/vault"
+                className={`${styles.navLink} ${location.pathname === '/vault' ? styles.active : ''}`}
+              >
+                🔒 Vault
+              </Link>
+              <Link
                 to="/history"
                 className={`${styles.navLink} ${location.pathname === '/history' ? styles.active : ''}`}
               >

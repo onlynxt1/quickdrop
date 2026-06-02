@@ -9,6 +9,7 @@ import DownloadPage from './pages/DownloadPage';
 import SnippetPage from './pages/SnippetPage';
 import AuthPage from './pages/AuthPage';
 import HistoryPage from './pages/HistoryPage';
+import VaultPage from './pages/VaultPage';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/note/:id"      element={<SnippetPage />} />
           <Route path="/auth"          element={<AuthPage />} />
           <Route path="/history"       element={<HistoryPage />} />
+          <Route path="/vault"         element={<VaultPage />} />
         </Routes>
       </Layout>
     </AuthProvider>
