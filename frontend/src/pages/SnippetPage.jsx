@@ -76,6 +76,8 @@ export default function SnippetPage() {
   const [error, setError]       = useState('');
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
+  const [qrCode, setQrCode]         = useState('');
+  const [showQr, setShowQr]         = useState(false);
 
   useEffect(() => {
     axios.get(`/api/snippets/${id}`)
@@ -96,6 +98,15 @@ export default function SnippetPage() {
       setCopiedText(true);
       setTimeout(() => setCopiedText(false), 2200);
     });
+  }
+
+  async function toggleQr() {
+    if (showQr) { setShowQr(false); return; }
+    if (!qrCode) {
+      const res = await axios.get(`/api/snippets/${id}/qr`);
+      setQrCode(res.data.qrCode);
+    }
+    setShowQr(true);
   }
 
   // ── Loading ────────────────────────────────────────────────
@@ -271,7 +282,33 @@ export default function SnippetPage() {
               </>
             )}
           </button>
+
+          {/* QR code */}
+          <button
+            className={`${styles.actionBtn} ${showQr ? styles.activeBtn : ''}`}
+            onClick={toggleQr}
+          >
+            <svg width="15" height="15" viewBox="0 0 14 14" fill="none">
+              <rect x="1" y="1" width="4.5" height="4.5" rx="0.8" stroke="currentColor" strokeWidth="1.3"/>
+              <rect x="8.5" y="1" width="4.5" height="4.5" rx="0.8" stroke="currentColor" strokeWidth="1.3"/>
+              <rect x="1" y="8.5" width="4.5" height="4.5" rx="0.8" stroke="currentColor" strokeWidth="1.3"/>
+              <rect x="9.5" y="9.5" width="1" height="1" rx="0.3" fill="currentColor"/>
+              <rect x="8.5" y="8.5" width="1" height="1" rx="0.3" fill="currentColor"/>
+              <rect x="11.5" y="8.5" width="1" height="1" rx="0.3" fill="currentColor"/>
+              <rect x="8.5" y="11.5" width="1" height="1" rx="0.3" fill="currentColor"/>
+              <rect x="11.5" y="11.5" width="1" height="1" rx="0.3" fill="currentColor"/>
+            </svg>
+            {showQr ? 'Hide QR' : 'QR code'}
+          </button>
         </div>
+
+        {/* ── QR panel ── */}
+        {showQr && qrCode && (
+          <div className={styles.qrPanel}>
+            <p className={styles.qrHint}>Point your camera to open on another device</p>
+            <img src={qrCode} alt="QR code" className={styles.qrImg} />
+          </div>
+        )}
 
         {/* ── Footer: QuickDrop CTA ── */}
         <div className={styles.cta}>

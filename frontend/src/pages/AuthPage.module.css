@@ -91,6 +91,15 @@
   font-size: 13px;
 }
 
+.successMsg {
+  padding: 10px 14px;
+  background: rgba(48, 209, 88, 0.1);
+  border: 1px solid rgba(48, 209, 88, 0.3);
+  border-radius: var(--radius-sm);
+  color: #30D158;
+  font-size: 13px;
+}
+
 .submitBtn {
   display: flex;
   align-items: center;

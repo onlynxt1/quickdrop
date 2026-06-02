@@ -3,6 +3,7 @@
  */
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
+const QRCode = require('qrcode');
 const db = require('../db');
 const { optionalAuth } = require('../middleware/auth');
 
@@ -50,6 +51,27 @@ router.post('/', optionalAuth, (req, res) => {
     expiresAt,
     characterCount: content.length
   });
+});
+
+// GET /api/snippets/:id/qr — QR code for a snippet's share link
+router.get('/:id/qr', async (req, res) => {
+  const snippet = db.prepare('SELECT id, expires_at FROM snippets WHERE id = ?').get(req.params.id);
+  if (!snippet) return res.status(404).json({ error: 'Snippet not found' });
+  if (new Date(snippet.expires_at) < new Date()) {
+    return res.status(410).json({ error: 'This snippet has expired' });
+  }
+
+  const url = `${req.protocol}://${req.get('host')}/note/${snippet.id}`;
+  try {
+    const qrCode = await QRCode.toDataURL(url, {
+      width: 256,
+      margin: 2,
+      color: { dark: '#000000', light: '#FFFFFF' },
+    });
+    res.json({ qrCode });
+  } catch {
+    res.status(500).json({ error: 'Failed to generate QR code' });
+  }
 });
 
 // GET /api/snippets/:id — retrieve a snippet by ID

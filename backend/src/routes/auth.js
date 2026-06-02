@@ -73,4 +73,30 @@ router.get('/me', authenticateToken, (req, res) => {
   res.json({ user });
 });
 
+// POST /api/auth/reset-password — reset password using email
+router.post('/reset-password', (req, res) => {
+  const { email, newPassword } = req.body;
+
+  if (!email || !newPassword) {
+    return res.status(400).json({ error: 'Email and new password are required' });
+  }
+  if (newPassword.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters' });
+  }
+
+  try {
+    const user = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+    if (!user) {
+      return res.status(404).json({ error: 'No account found with that email address' });
+    }
+
+    const passwordHash = bcrypt.hashSync(newPassword, 10);
+    db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, user.id);
+
+    res.json({ message: 'Password reset successfully. You can now sign in.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+});
+
 module.exports = router;
