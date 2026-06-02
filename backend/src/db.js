@@ -122,4 +122,21 @@ db.exec(`
   )
 `);
 
+// ── Password reset tokens ─────────────────────────────────────
+// Each row is a one-time-use link emailed to the user.
+// token  : 64-char hex string, randomly generated
+// used   : 1 once the password has been changed
+// expires_at: 15 minutes from creation
+db.exec(`
+  CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    token TEXT UNIQUE NOT NULL,
+    expires_at DATETIME NOT NULL,
+    used INTEGER NOT NULL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  )
+`);
+
 module.exports = db;

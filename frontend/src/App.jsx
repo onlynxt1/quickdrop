@@ -10,18 +10,20 @@ import SnippetPage from './pages/SnippetPage';
 import AuthPage from './pages/AuthPage';
 import HistoryPage from './pages/HistoryPage';
 import VaultPage from './pages/VaultPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 export default function App() {
   return (
     <AuthProvider>
       <Layout>
         <Routes>
-          <Route path="/"              element={<HomePage />} />
-          <Route path="/share/:id"     element={<DownloadPage />} />
-          <Route path="/note/:id"      element={<SnippetPage />} />
-          <Route path="/auth"          element={<AuthPage />} />
-          <Route path="/history"       element={<HistoryPage />} />
-          <Route path="/vault"         element={<VaultPage />} />
+          <Route path="/"                element={<HomePage />} />
+          <Route path="/share/:id"       element={<DownloadPage />} />
+          <Route path="/note/:id"        element={<SnippetPage />} />
+          <Route path="/auth"            element={<AuthPage />} />
+          <Route path="/history"         element={<HistoryPage />} />
+          <Route path="/vault"           element={<VaultPage />} />
+          <Route path="/reset-password"  element={<ResetPasswordPage />} />
         </Routes>
       </Layout>
     </AuthProvider>
