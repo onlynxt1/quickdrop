@@ -131,6 +131,34 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ── 6-digit code input ── */
+.codeRow {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.codeBox {
+  flex: 1;
+  min-width: 0;
+  aspect-ratio: 1;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: var(--font);
+  caret-color: transparent;
+}
+.codeBox:focus {
+  border-color: var(--accent);
+  background: rgba(10,132,255,0.08);
+}
+
 /* ── Toggle ── */
 .toggle {
   text-align: center;
