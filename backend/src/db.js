@@ -7,11 +7,8 @@ const path = require('path');
 const fs = require('fs');
 
 // Ensure the data directory exists.
-// On Render (production) we use the /data persistent disk mount point.
-// Locally we use the relative ../data folder next to the backend src.
-const dataDir = process.env.NODE_ENV === 'production'
-  ? '/data'
-  : path.join(__dirname, '..', 'data');
+// On Render free tier we use the local data folder. If a paid disk is attached later, we can set DB_PATH=/data.
+const dataDir = process.env.DB_PATH || path.join(__dirname, '..', 'data');
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
 const db = new Database(path.join(dataDir, 'quickdrop.db'));
