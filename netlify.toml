@@ -8,13 +8,13 @@
 # Replace the placeholder below with your actual Render URL once deployed.
 [[redirects]]
   from   = "/api/*"
-  to     = "https://YOUR-RENDER-APP.onrender.com/api/:splat"
+  to     = "https://quickdrop-5bks.onrender.com/api/:splat"
   status = 200
   force  = true
 
 [[redirects]]
   from   = "/download/*"
-  to     = "https://YOUR-RENDER-APP.onrender.com/download/:splat"
+  to     = "https://quickdrop-5bks.onrender.com/download/:splat"
   status = 200
   force  = true
 
