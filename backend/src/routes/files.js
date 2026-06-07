@@ -63,9 +63,8 @@ router.post('/upload', optionalAuth, upload.single('file'), (req, res) => {
       expiresAt
     );
 
-    // Build the share link (preview page) using the request host.
-    // The actual file download lives at /download/:id (backend-only route).
-    const host = `${req.protocol}://${req.get('host')}`;
+    // Build the share link (preview page) using the frontend URL.
+    const host = process.env.FRONTEND_URL || `${req.protocol}://${req.get('host')}`;
     const downloadLink = `${host}/share/${fileId}`;
 
     res.status(201).json({
@@ -110,7 +109,7 @@ router.get('/:id/qr', async (req, res) => {
   const file = db.prepare('SELECT id FROM files WHERE id = ?').get(req.params.id);
   if (!file) return res.status(404).json({ error: 'File not found' });
 
-  const host = `${req.protocol}://${req.get('host')}`;
+  const host = process.env.FRONTEND_URL || `${req.protocol}://${req.get('host')}`;
   const downloadLink = `${host}/share/${file.id}`;
 
   try {
