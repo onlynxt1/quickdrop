@@ -11,11 +11,24 @@ const db = require('./db');
 const { optionalAuth } = require('./middleware/auth');
 
 const app = express();
-// In production PORT=5000 (set by Replit). In dev, Express uses 3001 and Vite proxies to it.
-const PORT = process.env.PORT || (process.env.NODE_ENV === 'production' ? 5000 : 3001);
+// PORT is set by Render in production. Falls back to 3001 for local dev.
+const PORT = process.env.PORT || 3001;
 
 // ── Middleware ──────────────────────────────────────────────
-app.use(cors({ origin: '*' }));
+// Only accept requests from the Netlify frontend and local dev.
+const ALLOWED_ORIGINS = [
+  'https://quickdropfiles.netlify.app',
+  'http://localhost:5000',
+  'http://localhost:3000',
+];
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (curl, Postman, server-to-server)
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

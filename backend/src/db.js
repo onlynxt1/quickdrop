@@ -6,8 +6,12 @@ const Database = require('better-sqlite3');
 const path = require('path');
 const fs = require('fs');
 
-// Ensure the data directory exists
-const dataDir = path.join(__dirname, '..', 'data');
+// Ensure the data directory exists.
+// On Render (production) we use the /data persistent disk mount point.
+// Locally we use the relative ../data folder next to the backend src.
+const dataDir = process.env.NODE_ENV === 'production'
+  ? '/data'
+  : path.join(__dirname, '..', 'data');
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
 const db = new Database(path.join(dataDir, 'quickdrop.db'));

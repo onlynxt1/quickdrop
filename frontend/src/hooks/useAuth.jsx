@@ -4,6 +4,13 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Point all axios calls at the deployed API.
+// VITE_API_URL is set in Netlify environment variables.
+// In local dev the Vite proxy forwards /api/* to localhost:3001, so this can be left empty.
+if (import.meta.env.VITE_API_URL) {
+  axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+}
+
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {

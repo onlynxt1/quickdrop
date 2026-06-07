@@ -19,8 +19,8 @@ if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 // File expiry: 1 hour (in milliseconds)
 const FILE_EXPIRY_MS = 60 * 60 * 1000;
 
-// Max file size: 5GB
-const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024;
+// Max file size: 10 GB
+const MAX_FILE_SIZE = 10 * 1024 * 1024 * 1024;
 
 // Multer storage: use UUID as filename to avoid conflicts
 const storage = multer.diskStorage({

@@ -3,7 +3,25 @@
   command = "npm run build"
   publish = "dist"
 
+# ── Backend API proxy ────────────────────────────────────────────
+# Netlify forwards /api/* and /download/* to the Render backend.
+# Replace the placeholder below with your actual Render URL once deployed.
+[[redirects]]
+  from   = "/api/*"
+  to     = "https://YOUR-RENDER-APP.onrender.com/api/:splat"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "/download/*"
+  to     = "https://YOUR-RENDER-APP.onrender.com/download/:splat"
+  status = 200
+  force  = true
+
+# ── SPA catch-all (must be last) ────────────────────────────────
+# React Router handles all other routes client-side.
 [[redirects]]
   from   = "/*"
   to     = "/index.html"
   status = 200
+

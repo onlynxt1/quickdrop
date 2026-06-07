@@ -1,0 +1,31 @@
+# Replit internals — not needed on GitHub
+.local/
+.agents/
+.replit
+replit.md
+attached_assets/
+
+# Dependencies
+node_modules/
+
+# Environment secrets — never commit these
+.env
+*.env
+
+# SQLite database files (stored on Render's persistent disk in production)
+*.db
+*.db-shm
+*.db-wal
+backend/data/
+
+# Uploaded files (also stored on Render's persistent disk)
+backend/uploads/
+backend/vault/
+backend/vault_temp/
+
+# Vite build output
+frontend/dist/
+
+# OS noise
+.DS_Store
+Thumbs.db
